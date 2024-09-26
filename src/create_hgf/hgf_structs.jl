@@ -16,6 +16,8 @@ abstract type AbstractBinaryStateNode <: AbstractStateNode end
 abstract type AbstractBinaryInputNode <: AbstractInputNode end
 abstract type AbstractCategoricalStateNode <: AbstractStateNode end
 abstract type AbstractCategoricalInputNode <: AbstractInputNode end
+abstract type AbstractPomdpInputNode <: AbstractInputNode end
+
 
 #Abstract type for node information
 abstract type AbstractNodeInfo end
@@ -461,8 +463,6 @@ end
 ###############################################################################
 ############################## POMDP Input Node ###############################
 ###############################################################################
-
-abstract type AbstractPomdpInputNode <: AbstractInputNode end
 
 Base.@kwdef mutable struct PomdpInput <: AbstractInputNodeInfo
     name::String

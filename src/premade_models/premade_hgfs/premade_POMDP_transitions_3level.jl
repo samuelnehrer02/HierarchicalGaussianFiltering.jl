@@ -97,7 +97,7 @@ function premade_pomdp_transitions(config::Dict; verbose::Bool = true)
     #For each categorical input node
     for node_name in input_node_names
         #Add it to the list
-        push!(nodes, CategoricalInput(node_name))
+        push!(nodes, PomdpInput(node_name))
     end
 
     #For each categorical state node
