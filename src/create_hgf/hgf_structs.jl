@@ -379,8 +379,8 @@ Base.@kwdef mutable struct CategoricalStateNodeEdges
     category_parent_order::Vector{String} = []
 
     #Possible children
-    observation_children::Vector{<:AbstractCategoricalInputNode} =
-        Vector{CategoricalInputNode}()
+    observation_children::Vector{<:AbstractCategoricalInputNode} = Vector{CategoricalInputNode}()
+    pomdp_observation_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
 end
 
 Base.@kwdef mutable struct CategoricalStateNodeParameters
@@ -455,4 +455,46 @@ Base.@kwdef mutable struct CategoricalInputNode <: AbstractCategoricalInputNode
     parameters::CategoricalInputNodeParameters = CategoricalInputNodeParameters()
     states::CategoricalInputNodeState = CategoricalInputNodeState()
     history::CategoricalInputNodeHistory = CategoricalInputNodeHistory()
+end
+
+
+###############################################################################
+############################## POMDP Input Node ###############################
+###############################################################################
+
+abstract type AbstractPomdpInputNode <: AbstractInputNode end
+
+Base.@kwdef mutable struct PomdpInput <: AbstractInputNodeInfo
+    name::String
+end
+
+Base.@kwdef mutable struct PomdpInputNodeEdges
+    observation_parents::Vector{<:AbstractCategoricalStateNode} =
+        Vector{CategoricalStateNode}()
+end
+
+Base.@kwdef mutable struct PomdpInputNodeParameters
+    coupling_strengths::Dict{String,Real} = Dict{String,Real}()
+end
+
+"""
+Configuration of states of POMDP input node
+"""
+Base.@kwdef mutable struct PomdpInputNodeState
+    input_value::Union{Real,Missing} = missing
+end
+
+"""
+History of POMDP input node
+"""
+Base.@kwdef mutable struct PomdpInputNodeHistory
+    input_value::Vector{Union{Real,Missing}} = [missing]
+end
+
+Base.@kwdef mutable struct PomdpInputNode <: AbstractPomdpInputNode
+    name::String
+    edges::PomdpInputNodeEdges = PomdpInputNodeEdges()
+    parameters::PomdpInputNodeParameters = PomdpInputNodeParameters()
+    states::PomdpInputNodeState = PomdpInputNodeState()
+    history::PomdpInputNodeHistory = PomdpInputNodeHistory()
 end

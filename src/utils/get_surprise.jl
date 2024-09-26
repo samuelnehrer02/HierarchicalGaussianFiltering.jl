@@ -138,3 +138,25 @@ function get_surprise(node::CategoricalInputNode)
 
     return surprise
 end
+
+"""
+    get_surprise(node::PomdpInputNode)
+
+Calculate the surprise of a categorical input node on seeing the last input.
+"""
+function get_surprise(node::PomdpInputNode)
+
+    #If there was no input
+    if ismissing(node.states.input_value)
+        #Return no surprise
+        return 0
+    end
+
+    #Get value parent
+    parent = node.edges.observation_parents[1]
+
+    #Get surprise
+    surprise = sum(-log.(exp.(log.(parent.states.prediction) .* parent.states.posterior)))
+
+    return surprise
+end

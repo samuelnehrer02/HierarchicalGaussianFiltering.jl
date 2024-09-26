@@ -28,15 +28,24 @@ function update_hgf!(
         update_node_prediction!(node, stepsize)
     end
 
+    ##################################
+    #### This doesnt matter for categorical inputs #####
+    ##################################
     #For each input node, in the specified update order
     for node in reverse(hgf.ordered_nodes.input_nodes)
         #Update its prediction from last trial
         update_node_prediction!(node, stepsize)
     end
 
+    ##################################
+    #### This is where it starts #####
+    ##################################
     ### Supply inputs to input nodes ###
     enter_node_inputs!(hgf, inputs)
 
+    ##################################
+    #### This doesnt matter for categorical inputs #####
+    ##################################
     ### Update input node value prediction errors ###
     #For each input node, in the specified update order
     for node in hgf.ordered_nodes.input_nodes
@@ -44,16 +53,25 @@ function update_hgf!(
         update_node_value_prediction_error!(node)
     end
 
+
     ### Update input node value parent posteriors ###
     #For each node that is a value parent of an input node
     for node in hgf.ordered_nodes.early_update_state_nodes
-        #Update its posterior    
+        #Update its posterior 
+
+        ##################################
+        #### This just creates a one hot vector #####
+        ##################################
         update_node_posterior!(node, node.update_type)
         #And its value prediction error
         update_node_value_prediction_error!(node)
         #And its precision prediction error
         update_node_precision_prediction_error!(node)
     end
+
+    ##################################
+    #### This doesnt matter for categorical inputs ####
+    ##################################
 
     ### Update input node precision prediction errors ###
     #For each input node, in the specified update order

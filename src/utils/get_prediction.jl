@@ -136,3 +136,11 @@ function get_prediction(node::CategoricalInputNode, stepsize::Real = 1)
 
     return new_states
 end
+
+function get_prediction(node::PomdpInputNode, stepsize::Real = 1)
+
+    #Binary input nodes have no prediction states
+    new_states = (;)
+
+    return new_states
+end

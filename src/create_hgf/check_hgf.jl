@@ -175,3 +175,19 @@ function check_hgf(node::CategoricalInputNode)
     end
 
 end
+
+function check_hgf(node::PomdpInputNode)
+
+    #Extract node name for error messages
+    node_name = node.name
+
+    #Require exactly one value parent
+    if length(node.edges.observation_parents) != 1
+        throw(
+            ArgumentError(
+                "The categorical input node $node_name does not have exactly one observation parent. This is not supported.",
+            ),
+        )
+    end
+
+end

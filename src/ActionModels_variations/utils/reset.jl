@@ -91,3 +91,10 @@ function reset_state!(node::CategoricalInputNode)
 
     return nothing
 end
+
+function reset_state!(node::PomdpInputNode)
+
+    node.states.input_value = missing
+
+    return nothing
+end
