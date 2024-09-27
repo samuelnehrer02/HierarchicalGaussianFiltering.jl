@@ -22,7 +22,8 @@ export DriftCoupling,
     VolatilityCoupling,
     NoiseCoupling,
     LinearTransform,
-    NonlinearTransform
+    NonlinearTransform,
+    PomdpCoupling
 
 #Add premade agents to shared dict at initialization
 function __init__()

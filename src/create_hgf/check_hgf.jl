@@ -113,11 +113,11 @@ function check_hgf(node::CategoricalStateNode)
     #Extract node name for error messages
     node_name = node.name
 
-    #Require exactly one value child
-    if length(node.edges.observation_children) != 1
+    #Require exactly one value child, which can be either an observation child or a POMDP child
+    if length(node.edges.observation_children) + length(node.edges.pomdp_children) != 1
         throw(
             ArgumentError(
-                "The categorical state node $node_name does not have exactly one observation child. This is not supported.",
+                "The categorical state node $node_name does not have exactly one observation child or POMDP child. This is not supported.",
             ),
         )
     end
@@ -185,7 +185,7 @@ function check_hgf(node::PomdpInputNode)
     if length(node.edges.observation_parents) != 1
         throw(
             ArgumentError(
-                "The categorical input node $node_name does not have exactly one observation parent. This is not supported.",
+                "The POMDP input node $node_name does not have exactly one observation parent. This is not supported.",
             ),
         )
     end

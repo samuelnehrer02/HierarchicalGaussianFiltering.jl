@@ -33,7 +33,7 @@ function Base.show(io::IO, hgf::HGF)
     #Input nodes
     println("Number of input nodes: $n_input_nodes")
     println(
-        "($n_continuous_input_nodes continuous, $n_binary_input_nodes binary and $n_categorical_input_nodes categorical)",
+        "($n_continuous_input_nodes continuous, $n_binary_input_nodes binary, $n_categorical_input_nodes categorical, $n_pomdp_input_nodes POMDP)",
     )
 
     #State nodes

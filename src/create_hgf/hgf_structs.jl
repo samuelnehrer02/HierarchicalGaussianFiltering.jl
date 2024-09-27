@@ -68,6 +68,7 @@ Base.@kwdef mutable struct ProbabilityCoupling <: ValueCoupling
 end
 Base.@kwdef mutable struct CategoryCoupling <: ValueCoupling end
 Base.@kwdef mutable struct ObservationCoupling <: ValueCoupling end
+Base.@kwdef mutable struct PomdpCoupling <: ValueCoupling end
 
 #Concrete precision coupling types
 Base.@kwdef mutable struct VolatilityCoupling <: PrecisionCoupling
@@ -382,7 +383,7 @@ Base.@kwdef mutable struct CategoricalStateNodeEdges
 
     #Possible children
     observation_children::Vector{<:AbstractCategoricalInputNode} = Vector{CategoricalInputNode}()
-    pomdp_observation_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
+    pomdp_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
 end
 
 Base.@kwdef mutable struct CategoricalStateNodeParameters

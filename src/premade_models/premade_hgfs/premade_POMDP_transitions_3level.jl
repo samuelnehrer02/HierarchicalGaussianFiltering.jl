@@ -164,7 +164,7 @@ function premade_pomdp_transitions(config::Dict; verbose::Bool = true)
         zip(input_node_names, observation_parent_names)
 
         #Add their connection
-        edges[(input_node_name, observation_parent_name)] = ObservationCoupling()
+        edges[(input_node_name, observation_parent_name)] = PomdpCoupling()
     end
 
     #For each categorical state node

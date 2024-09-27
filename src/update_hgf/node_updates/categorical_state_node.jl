@@ -93,24 +93,35 @@ One hot encoding
 """
 function calculate_posterior(node::CategoricalStateNode)
 
-    #Extract the child
-    child = node.edges.observation_children[1]
+    # If Categorical State Node has observation children
+    if !isempty(node.edges.observation_children)
+        #Extract the observation child
+        child = node.edges.observation_children[1]
 
-    #Initialize posterior as previous posterior
-    posterior = node.states.posterior
+        #Initialize posterior as previous posterior
+        posterior = node.states.posterior
 
-    #For missing inputs
-    if ismissing(child.states.input_value)
-        #Set the posterior to be all missing
-        posterior .= missing
+        #For missing inputs
+        if ismissing(child.states.input_value)
+            #Set the posterior to be all missing
+            posterior .= missing
 
+        else
+            #Set all values to 0
+            posterior .= zero(Real)
+
+            #Set the posterior for the observed category to 1
+            posterior[child.states.input_value] = 1
+        end
+
+    # If Categorical State Node has no observation children we just copy the input
     else
-        #Set all values to 0
-        posterior .= zero(Real)
-
-        #Set the posterior for the observed category to 1
-        posterior[child.states.input_value] = 1
+        # Extract the pomdp child
+        child = node.edges.pomdp_children[1]
+        # Set the posterior to be the input value
+        posterior = child.states.input_value
     end
+
     return posterior
 end
 

@@ -71,6 +71,10 @@ function init_edge!(
     elseif coupling_type isa NoiseCoupling
         parents_field = :noise_parents
         children_field = :noise_children
+
+    elseif coupling_type isa PomdpCoupling
+        parents_field = :observation_parents
+        children_field = :pomdp_children
     end
 
     #Add the parent to the child node
