@@ -482,14 +482,14 @@ end
 Configuration of states of POMDP input node
 """
 Base.@kwdef mutable struct PomdpInputNodeState
-    input_value::Union{Real,Missing} = missing
+    input_value::Union{Vector{<:Real}, Missing} = missing
 end
 
 """
 History of POMDP input node
 """
 Base.@kwdef mutable struct PomdpInputNodeHistory
-    input_value::Vector{Union{Real,Missing}} = [missing]
+    input_value::Vector{Union{Vector{<:Real}, Missing}} = [missing]
 end
 
 Base.@kwdef mutable struct PomdpInputNode <: AbstractPomdpInputNode

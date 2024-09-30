@@ -114,12 +114,16 @@ function calculate_posterior(node::CategoricalStateNode)
             posterior[child.states.input_value] = 1
         end
 
-    # If Categorical State Node has no observation children we just copy the input
+    # If Categorical State Node has POMDP children we just copy the input
     else
         # Extract the pomdp child
         child = node.edges.pomdp_children[1]
+
+        # Initialize posterior as previous posterior
+        posterior = node.states.posterior
+
         # Set the posterior to be the input value
-        posterior = child.states.input_value
+        posterior .= child.states.input_value
     end
 
     return posterior

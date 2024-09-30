@@ -155,6 +155,21 @@ function enter_node_inputs!(hgf::HGF, inputs::Dict{String,<:Union{Real,Missing}}
     return nothing
 end
 
+"""
+    enter_node_inputs!(hgf::HGF, inputs::Vector{<:Real})
+
+For POMDP models where the input is a categorical probability distribution.
+"""
+function enter_node_inputs!(hgf::HGF, inputs::Vector{T}) where T<:Real
+
+    # For each input node 
+    for input_node in hgf.ordered_nodes.input_nodes
+        # Enter the same input for each node
+        update_node_input!(input_node, inputs)
+    end
+
+    return nothing
+end
 
 """
     update_node_input!(node::AbstractInputNode, input::Union{Real,Missing})
@@ -162,6 +177,19 @@ end
 Update the prediction of a single input node.
 """
 function update_node_input!(node::AbstractInputNode, input::Union{Real,Missing})
+    #Receive input
+    node.states.input_value = input
+
+    return nothing
+end
+
+
+"""
+    update_node_input!(node::AbstractInputNode, input::Vector{<:Real})
+
+For POMDP models where the input is a categorical probability distribution.
+"""
+function update_node_input!(node::AbstractInputNode, input::Vector{T}) where T<:Real
     #Receive input
     node.states.input_value = input
 

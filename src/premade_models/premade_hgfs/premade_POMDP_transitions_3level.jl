@@ -74,7 +74,7 @@ function premade_pomdp_transitions(config::Dict; verbose::Bool = true)
     #Go through each category that the transition may have been from
     for category_from = 1:config["n_categories_from"]
         #One input node and its state node parent for each                             
-        push!(input_node_names, "u" * string(category_from))
+        push!(input_node_names, "pomdp" * string(category_from))
         push!(observation_parent_names, "xcat_" * string(category_from))
         #Go through each category that the transition may have been to
         for category_to = 1:config["n_categories_to"]
