@@ -157,7 +157,7 @@ function premade_pomdp_transitions(config::Dict; verbose::Bool = true)
 
     ##Create edges
     #Initialize list                                                     
-    edges = Dict{Tuple{String,String},CouplingType}()
+    edges = OrderedDict{Tuple{String,String},CouplingType}()
 
     #For each categorical input node and its corresponding state node parent
     for (input_node_name, observation_parent_name) in

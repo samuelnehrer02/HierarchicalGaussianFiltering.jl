@@ -74,7 +74,7 @@ hgf = init_hgf(
 """
 function init_hgf(;
     nodes::Vector{<:AbstractNodeInfo},
-    edges::Dict{Tuple{String,String},<:CouplingType},
+    edges::AbstractDict{Tuple{String,String},<:CouplingType},
     node_defaults::NodeDefaults = NodeDefaults(),
     parameter_groups::Vector{ParameterGroup} = Vector{ParameterGroup}(),
     update_order::Union{Nothing,Vector{String}} = nothing,

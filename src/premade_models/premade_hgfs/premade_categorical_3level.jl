@@ -118,7 +118,7 @@ function premade_categorical_3level(config::Dict; verbose::Bool = true)
 
     ##List of edges
     #Set the input node coupling
-    edges = Dict{Tuple{String,String},CouplingType}(("u", "xcat") => ObservationCoupling())
+    edges = OrderedDict{Tuple{String,String},CouplingType}(("u", "xcat") => ObservationCoupling())
 
     #For each set of categroy parents and their probability parents
     for (category_parent_name, probability_parent_name) in
@@ -195,3 +195,5 @@ function premade_categorical_3level(config::Dict; verbose::Bool = true)
         save_history = config["save_history"],
     )
 end
+
+
