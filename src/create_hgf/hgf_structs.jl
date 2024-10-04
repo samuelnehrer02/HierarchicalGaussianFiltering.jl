@@ -530,8 +530,8 @@ end
 Configuration of states of TMP state node
 """
 Base.@kwdef mutable struct TPMStateNodeState
-    posterior::Matrix{Real} = []
-    prediction::Matrix{Real} = []
+    posterior::Vector{Any} = []
+    prediction::Vector{Any} = []
     parent_predictions::Vector{Vector{Real}} = []
     previous_qs::Vector{Real} = []
 end
@@ -540,8 +540,8 @@ end
 Configuration of history in TPM state node
 """
 Base.@kwdef mutable struct TPMStateNodeHistory
-    posterior::Vector{Matrix{Real}} = []
-    prediction::Vector{Matrix{Real}} = []
+    posterior::Vector{Any} = []
+    prediction::Vector{Any} = []
     parent_predictions::Vector{Vector{Vector{Real}}} = []
 end
 
@@ -551,9 +551,9 @@ Configuration of edges in TPM state node
 Base.@kwdef mutable struct TPMStateNode <: AbstractTPMStateNode
     name::String
     edges::TPMStateNodeEdges = TPMStateNodeEdges()
-    parameters::TPMStateNodeParameters = CategoricalStateNodeParameters()
-    states::TPMStateNodeState = CategoricalStateNodeState()
-    history::TPMStateNodeHistory = CategoricalStateNodeHistory()
+    parameters::TPMStateNodeParameters = TPMStateNodeParameters()
+    states::TPMStateNodeState = TPMStateNodeState()
+    history::TPMStateNodeHistory = TPMStateNodeHistory()
     update_type::HGFUpdateType = ClassicUpdate()
 end
 
