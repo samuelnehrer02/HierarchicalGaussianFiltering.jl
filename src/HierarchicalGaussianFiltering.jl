@@ -14,7 +14,7 @@ export ParameterGroup
 export EnhancedUpdate, ClassicUpdate
 export NodeDefaults
 export ContinuousState,
-    ContinuousInput, BinaryState, BinaryInput, CategoricalState, CategoricalInput, PomdpInput
+    ContinuousInput, BinaryState, BinaryInput, CategoricalState, CategoricalInput, PomdpInput, TPMState
 export DriftCoupling,
     ObservationCoupling,
     CategoryCoupling,
@@ -23,7 +23,8 @@ export DriftCoupling,
     NoiseCoupling,
     LinearTransform,
     NonlinearTransform,
-    PomdpCoupling
+    PomdpCoupling,
+    TPMCoupling
 
 #Add premade agents to shared dict at initialization
 function __init__()

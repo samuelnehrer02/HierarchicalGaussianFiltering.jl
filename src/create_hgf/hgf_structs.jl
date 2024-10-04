@@ -17,6 +17,7 @@ abstract type AbstractBinaryInputNode <: AbstractInputNode end
 abstract type AbstractCategoricalStateNode <: AbstractStateNode end
 abstract type AbstractCategoricalInputNode <: AbstractInputNode end
 abstract type AbstractPomdpInputNode <: AbstractInputNode end
+abstract type AbstractTPMStateNode <: AbstractStateNode end
 
 
 #Abstract type for node information
@@ -69,6 +70,7 @@ end
 Base.@kwdef mutable struct CategoryCoupling <: ValueCoupling end
 Base.@kwdef mutable struct ObservationCoupling <: ValueCoupling end
 Base.@kwdef mutable struct PomdpCoupling <: ValueCoupling end
+Base.@kwdef mutable struct TPMCoupling <: ValueCoupling end
 
 #Concrete precision coupling types
 Base.@kwdef mutable struct VolatilityCoupling <: PrecisionCoupling
@@ -499,3 +501,61 @@ Base.@kwdef mutable struct PomdpInputNode <: AbstractPomdpInputNode
     states::PomdpInputNodeState = PomdpInputNodeState()
     history::PomdpInputNodeHistory = PomdpInputNodeHistory()
 end
+
+#############################################################################################################
+############################## Transition Probability Matrix (TMP) State Node ###############################
+#############################################################################################################
+
+Base.@kwdef mutable struct TPMState <: AbstractStateNodeInfo
+    name::String
+end
+
+Base.@kwdef mutable struct TPMStateNodeEdges
+    # Possible Parents
+    Categorical_parents::Vector{<:AbstractCategoricalStateNode} = Vector{CategoricalStateNode}()
+
+    # The order of the category parents
+    category_parents_order::Vector{String} = []
+
+    # Possible Children
+    pomdp_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
+
+end
+
+Base.@kwdef mutable struct TPMStateNodeParameters
+    coupling_strengths::Dict{String,Real} = Dict{String,Real}()
+end
+
+"""
+Configuration of states of TMP state node
+"""
+Base.@kwdef mutable struct TPMStateNodeState
+    posterior::Matrix{Real} = []
+    prediction::Matrix{Real} = []
+    parent_predictions::Vector{Vector{Real}} = []
+    previous_qs::Vector{Real} = []
+end
+
+"""
+Configuration of history in TPM state node
+"""
+Base.@kwdef mutable struct TPMStateNodeHistory
+    posterior::Vector{Matrix{Real}} = []
+    prediction::Vector{Matrix{Real}} = []
+    parent_predictions::Vector{Vector{Vector{Real}}} = []
+end
+
+"""
+Configuration of edges in TPM state node
+"""
+Base.@kwdef mutable struct TPMStateNode <: AbstractTPMStateNode
+    name::String
+    edges::TPMStateNodeEdges = TPMStateNodeEdges()
+    parameters::TPMStateNodeParameters = CategoricalStateNodeParameters()
+    states::TPMStateNodeState = CategoricalStateNodeState()
+    history::TPMStateNodeHistory = CategoricalStateNodeHistory()
+    update_type::HGFUpdateType = ClassicUpdate()
+end
+
+
+
