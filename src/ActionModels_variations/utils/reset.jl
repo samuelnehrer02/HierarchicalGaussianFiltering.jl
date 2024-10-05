@@ -98,3 +98,20 @@ function reset_state!(node::PomdpInputNode)
 
     return nothing
 end
+
+function reset_state!(node::TPMStateNode)
+
+    # Check how many categories the node has
+    n_categories = length(node.edges.category_parents)
+
+    # Set the posterior to an empty matrix
+    node.states.posterior = Matrix{Union{Real, Missing}}(missing, n_categories, n_categories)
+    
+    node.states.previous_qs = Vector{Union{Real, Missing}}(missing, n_categories)
+    node.states.previous_qs .= 1/n_categories
+
+    node.states.prediction .= 1/n_categories
+    node.states.parent_predictions .= 1/n_categories
+
+    return nothing
+end

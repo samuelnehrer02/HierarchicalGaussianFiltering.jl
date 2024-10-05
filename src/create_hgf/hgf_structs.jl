@@ -385,7 +385,7 @@ Base.@kwdef mutable struct CategoricalStateNodeEdges
 
     #Possible children
     observation_children::Vector{<:AbstractCategoricalInputNode} = Vector{CategoricalInputNode}()
-    pomdp_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
+    tpm_children::Vector{<:AbstractTPMStateNode} = Vector{TPMStateNode}()
 end
 
 Base.@kwdef mutable struct CategoricalStateNodeParameters
@@ -472,8 +472,8 @@ Base.@kwdef mutable struct PomdpInput <: AbstractInputNodeInfo
 end
 
 Base.@kwdef mutable struct PomdpInputNodeEdges
-    observation_parents::Vector{<:AbstractCategoricalStateNode} =
-        Vector{CategoricalStateNode}()
+    observation_parents::Vector{<:AbstractTPMStateNode} =
+        Vector{TPMStateNode}()
 end
 
 Base.@kwdef mutable struct PomdpInputNodeParameters
@@ -512,13 +512,13 @@ end
 
 Base.@kwdef mutable struct TPMStateNodeEdges
     # Possible Parents
-    Categorical_parents::Vector{<:AbstractCategoricalStateNode} = Vector{CategoricalStateNode}()
+    category_parents::Vector{<:AbstractCategoricalStateNode} = Vector{CategoricalStateNode}()
 
     # The order of the category parents
     category_parents_order::Vector{String} = []
 
     # Possible Children
-    pomdp_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
+    observation_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
 
 end
 
@@ -530,10 +530,10 @@ end
 Configuration of states of TMP state node
 """
 Base.@kwdef mutable struct TPMStateNodeState
-    posterior::Vector{Any} = []
-    prediction::Vector{Any} = []
-    parent_predictions::Vector{Vector{Real}} = []
-    previous_qs::Vector{Real} = []
+    posterior::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(missing, 0, 0)
+    previous_qs::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
+    prediction::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
+    parent_predictions::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
 end
 
 """
@@ -542,7 +542,7 @@ Configuration of history in TPM state node
 Base.@kwdef mutable struct TPMStateNodeHistory
     posterior::Vector{Any} = []
     prediction::Vector{Any} = []
-    parent_predictions::Vector{Vector{Vector{Real}}} = []
+    parent_predictions::Vector{Vector{Vector{Any}}} = []
 end
 
 """

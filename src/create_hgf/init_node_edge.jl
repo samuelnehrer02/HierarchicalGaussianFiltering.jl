@@ -78,7 +78,7 @@ function init_edge!(
 
     elseif coupling_type isa PomdpCoupling
         parents_field = :observation_parents
-        children_field = :pomdp_children
+        children_field = :observation_children
 
     elseif coupling_type isa TPMCoupling
         parents_field = :category_parents
