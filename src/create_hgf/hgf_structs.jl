@@ -17,7 +17,9 @@ abstract type AbstractBinaryInputNode <: AbstractInputNode end
 abstract type AbstractCategoricalStateNode <: AbstractStateNode end
 abstract type AbstractCategoricalInputNode <: AbstractInputNode end
 abstract type AbstractPomdpInputNode <: AbstractInputNode end
+abstract type AbstractPomdpStateNode <: AbstractStateNode end
 abstract type AbstractTPMStateNode <: AbstractStateNode end
+
 
 
 #Abstract type for node information
@@ -502,6 +504,58 @@ Base.@kwdef mutable struct PomdpInputNode <: AbstractPomdpInputNode
     history::PomdpInputNodeHistory = PomdpInputNodeHistory()
 end
 
+###############################################################################
+############################## POMDP State Node ###############################
+###############################################################################
+
+Base.@kwdef mutable struct PomdpState <: AbstractStateNodeInfo
+    name::String
+end
+
+Base.@kwdef mutable struct PomdpStateNodeEdges
+    # Possible Parents
+    tpm_parents::Vector{<:AbstractTPMStateNode} = Vector{TPMStateNode}()
+
+    # The order of the category parents
+    tpm_parents_order::Vector{String} = []
+
+    # Possible Children
+    observation_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
+end
+
+Base.@kwdef mutable struct PomdpStateNodeParameters
+    coupling_strengths::Dict{String,Real} = Dict{String,Real}()
+end
+
+Base.@kwdef mutable struct PomdpStateNodeState
+    posterior::Array{Matrix{Union{Real, Missing}}} = Array{Matrix{Union{Real, Missing}}}(missing, 0, 0)
+    previous_qs::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
+    prediction::Array{Matrix{Union{Real, Missing}}} = Array{Matrix{Union{Real, Missing}}}(missing, 0, 0)
+    parent_predictions::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(missing, 0)
+end
+
+"""
+Configuration of history in POMDP state node
+"""
+Base.@kwdef mutable struct PomdpStateNodeHistory
+    posterior::Vector{Any} = []
+    prediction::Vector{Any} = []
+    parent_predictions::Vector{Any} = []
+    previous_qs::Vector{Any} = []
+end
+
+"""
+Configuration of edges in POMDP state node
+"""
+Base.@kwdef mutable struct PomdpStateNode <: AbstractPomdpStateNode
+    name::String
+    edges::PomdpStateNodeEdges = PomdpStateNodeEdges()
+    parameters::PomdpStateNodeParameters = PomdpStateNodeParameters()
+    states::PomdpStateNodeState = PomdpStateNodeState()
+    history::PomdpStateNodeHistory = PomdpStateNodeHistory()
+    update_type::HGFUpdateType = ClassicUpdate()
+end
+
 #############################################################################################################
 ############################## Transition Probability Matrix (TMP) State Node ###############################
 #############################################################################################################
@@ -518,7 +572,7 @@ Base.@kwdef mutable struct TPMStateNodeEdges
     category_parents_order::Vector{String} = []
 
     # Possible Children
-    observation_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
+    tpm_children::Vector{<:AbstractPomdpStateNode} = Vector{PomdpStateNode}()
 
 end
 
@@ -532,7 +586,7 @@ Configuration of states of TMP state node
 Base.@kwdef mutable struct TPMStateNodeState
     posterior::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(missing, 0, 0)
     previous_qs::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
-    prediction::Vector{Union{Real, Missing, Any}} = Vector{Union{Real, Missing}}(missing, 0)
+    prediction::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(missing, 0, 0)
     parent_predictions::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
 end
 

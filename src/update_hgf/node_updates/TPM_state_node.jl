@@ -16,8 +16,11 @@ function calculate_prediction(node::TPMStateNode)
     #Get current parent predictions
     parent_predictions =
         map(x -> x.states.prediction, collect(values(node.edges.category_parents)))
+    
+    # Convert to matrix
+    prediction_matrix = Matrix(hcat(parent_predictions...))
 
-    return parent_predictions
+    return prediction_matrix
 
 end
 
