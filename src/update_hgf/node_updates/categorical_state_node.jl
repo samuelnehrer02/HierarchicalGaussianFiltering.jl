@@ -91,6 +91,7 @@ Calculate the posterior for a categorical state node.
 One hot encoding
 `` \vec{u} = [0, 0, \dots ,1, \dots,0]  ``
 """
+# For categorical state node with TPM children
 function calculate_posterior(node::CategoricalStateNode)
 
     # If Categorical State Node has observation children
@@ -115,15 +116,27 @@ function calculate_posterior(node::CategoricalStateNode)
         end
 
     # If Categorical State Node has POMDP children we just copy the input
-    else
-        # Extract the pomdp child
-        child = node.edges.pomdp_children[1]
+    # elseif !isempty(node.edges.pomdp_children)
+    #     # Extract the pomdp child
+    #     child = node.edges.pomdp_children[1]
 
-        # Initialize posterior as previous posterior
-        posterior = node.states.posterior
+    #     # Initialize posterior as previous posterior
+    #     posterior = node.states.posterior
 
-        # Set the posterior to be the input value
-        posterior .= child.states.input_value
+    #     # Set the posterior to be the input value
+    #     posterior .= child.states.input_value
+
+    elseif !isempty(node.edges.tpm_children)
+
+        # Extract the TPM child
+        child = node.edges.tpm_children[1]
+
+        # Extracts the number from the name string
+        cat_state = parse(Int, match(r"\d+", node.name).match)
+
+        # Extracts the right row from the TPM child posterior matrix
+        posterior = child.states.posterior[cat_state, :]
+
     end
 
     return posterior

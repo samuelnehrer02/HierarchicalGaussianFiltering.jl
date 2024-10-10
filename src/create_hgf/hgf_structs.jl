@@ -532,7 +532,7 @@ Configuration of states of TMP state node
 Base.@kwdef mutable struct TPMStateNodeState
     posterior::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(missing, 0, 0)
     previous_qs::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
-    prediction::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
+    prediction::Vector{Union{Real, Missing, Any}} = Vector{Union{Real, Missing}}(missing, 0)
     parent_predictions::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
 end
 
@@ -543,6 +543,7 @@ Base.@kwdef mutable struct TPMStateNodeHistory
     posterior::Vector{Any} = []
     prediction::Vector{Any} = []
     parent_predictions::Vector{Vector{Vector{Any}}} = []
+    previous_qs::Vector{Any} = []
 end
 
 """
@@ -556,6 +557,3 @@ Base.@kwdef mutable struct TPMStateNode <: AbstractTPMStateNode
     history::TPMStateNodeHistory = TPMStateNodeHistory()
     update_type::HGFUpdateType = ClassicUpdate()
 end
-
-
-

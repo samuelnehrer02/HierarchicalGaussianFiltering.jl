@@ -1,3 +1,26 @@
+###################################
+######## Update prediction ########
+###################################
+
+##### Superfunction #####
+function update_node_prediction!(node::TPMStateNode, stepsize::Real)
+
+    # Update prediction
+    node.states.prediction = calculate_prediction(node)
+
+    return nothing
+end
+
+function calculate_prediction(node::TPMStateNode)
+
+    #Get current parent predictions
+    parent_predictions =
+        map(x -> x.states.prediction, collect(values(node.edges.category_parents)))
+
+    return parent_predictions
+
+end
+
 ##################################
 ######## Update posterior ########
 ##################################
@@ -8,7 +31,7 @@
 
 Update the posterior of a single Transition Probability Matrix state node.
 """
-function update_node_posterior!(node::HierarchicalGaussianFiltering.TPMStateNode, update_type::ClassicUpdate)
+function update_node_posterior!(node::TPMStateNode, update_type::ClassicUpdate)
 
     #Update posterior 
     node.states.posterior = calculate_posterior(node)
@@ -18,7 +41,7 @@ end
 
 
 
-function calculate_posterior(node::HierarchicalGaussianFiltering.TPMStateNode)
+function calculate_posterior(node::TPMStateNode)
 
     # Extract the pomdp child
     child = node.edges.observation_children[1]
@@ -44,4 +67,12 @@ function calculate_posterior(node::HierarchicalGaussianFiltering.TPMStateNode)
     return posterior
 end
 
+
+function update_node_value_prediction_error!(node::TPMStateNode)
+    return nothing
+end
+
+function update_node_precision_prediction_error!(node::TPMStateNode)
+    return nothing
+end
 

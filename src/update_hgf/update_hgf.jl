@@ -18,6 +18,7 @@ function update_hgf!(
         Missing,
         Vector{<:Union{Real,Missing}},
         Dict{String,<:Union{Real,Missing}},
+        Vector{<:Real},
     };
     stepsize::Real = 1,
 )
