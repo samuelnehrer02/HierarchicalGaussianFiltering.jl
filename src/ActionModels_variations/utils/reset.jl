@@ -87,7 +87,7 @@ end
 
 function reset_state!(node::CategoricalInputNode)
 
-    node.states.input_value = missing
+    node.states.input_value = [missing]
 
     return nothing
 end
@@ -95,14 +95,32 @@ end
 function reset_state!(node::PomdpInputNode)
 
     node.states.input_value = missing
+    node.states.policy_chosen = missing
 
     return nothing
 end
 
+function reset_state!(node::PomdpStateNode)
+
+    # Set the posterior to an empty matrix
+    node.states.posterior = Vector{Vector{<:Real}}(undef, 0)
+    
+    node.states.previous_qs = Vector{Union{Real, Missing}}(undef, 0)
+
+    node.states.prediction = Array{Matrix{Union{Real, Missing}}, 1}(undef, 0)
+    node.states.parent_predictions = Matrix{Union{Real, Missing}}(undef, 0, 0)
+
+    node.states.posterior_policy = Vector{Vector{Union{Missing, Int64}}}(undef, 0)
+    node.states.n_control = [missing]
+
+    return nothing
+end
+
+
 function reset_state!(node::TPMStateNode)
 
     # Check how many categories the node has
-    n_categories = length(node.edges.category_parents)
+    n_categories = length(node.edges.tpm_parents)
 
     # Set the posterior to an empty matrix
     node.states.posterior = Matrix{Union{Real, Missing}}(missing, n_categories, n_categories)
@@ -115,3 +133,6 @@ function reset_state!(node::TPMStateNode)
 
     return nothing
 end
+
+
+

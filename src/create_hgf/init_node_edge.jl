@@ -39,6 +39,10 @@ function init_node(node_info::PomdpInput)
     PomdpInputNode(name = node_info.name)
 end
 
+function init_node(node_info::PomdpState)
+    PomdpStateNode(name = node_info.name)
+end
+
 function init_node(node_info::TPMState)
     TPMStateNode(name = node_info.name)
 end
@@ -83,6 +87,7 @@ function init_edge!(
     elseif coupling_type isa TPMCoupling
         parents_field = :tpm_parents
         children_field = :tpm_children
+    end
 
     #Add the parent to the child node
     push!(getfield(child_node.edges, parents_field), parent_node)

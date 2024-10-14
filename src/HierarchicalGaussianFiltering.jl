@@ -58,8 +58,9 @@ include("update_hgf/node_updates/binary_input_node.jl")
 include("update_hgf/node_updates/binary_state_node.jl")
 include("update_hgf/node_updates/categorical_input_node.jl")
 include("update_hgf/node_updates/categorical_state_node.jl")
-include("update_hgf/node_updates/POMDP_input_node.jl")
-include("update_hgf/node_updates/TPM_state_node.jl")
+include("update_hgf/node_updates/pomdp_input_node.jl")
+include("update_hgf/node_updates/pomdp_state_node.jl")
+include("update_hgf/node_updates/tpm_state_node.jl")
 
 #Functions for creating HGFs
 include("create_hgf/check_hgf.jl")
@@ -79,7 +80,7 @@ include("premade_models/premade_hgfs/premade_categorical_3level.jl")
 include("premade_models/premade_hgfs/premade_categorical_transitions_3level.jl")
 include("premade_models/premade_hgfs/premade_continuous_2level.jl")
 include("premade_models/premade_hgfs/premade_JGET.jl")
-include("premade_models/premade_hgfs/premade_pomdp_transitions_3level.jl")
+include("premade_models/premade_hgfs/premade_pomdp_transition.jl")
 
 
 #Utility functions for HGFs

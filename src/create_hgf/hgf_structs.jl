@@ -474,8 +474,8 @@ Base.@kwdef mutable struct PomdpInput <: AbstractInputNodeInfo
 end
 
 Base.@kwdef mutable struct PomdpInputNodeEdges
-    observation_parents::Vector{<:AbstractTPMStateNode} =
-        Vector{TPMStateNode}()
+    observation_parents::Vector{<:AbstractTPMStateNode} = Vector{TPMStateNode}()
+    pomdp_parents::Vector{<:AbstractPomdpStateNode} = Vector{PomdpStateNode}()
 end
 
 Base.@kwdef mutable struct PomdpInputNodeParameters
@@ -486,14 +486,16 @@ end
 Configuration of states of POMDP input node
 """
 Base.@kwdef mutable struct PomdpInputNodeState
-    input_value::Union{Vector{<:Real}, Missing} = missing
+    input_value::Union{Vector{Vector{<:Real}}, Missing} = missing
+    policy_chosen::Union{Vector{<:Real}, Missing} = missing
 end
 
 """
 History of POMDP input node
 """
 Base.@kwdef mutable struct PomdpInputNodeHistory
-    input_value::Vector{Union{Vector{<:Real}, Missing}} = [missing]
+    input_value::Vector{Any} = []
+    policy_chosen::Vector{Any} = []
 end
 
 Base.@kwdef mutable struct PomdpInputNode <: AbstractPomdpInputNode
@@ -514,12 +516,13 @@ end
 
 Base.@kwdef mutable struct PomdpStateNodeEdges
     # Possible Parents
-    tpm_parents::Vector{<:AbstractTPMStateNode} = Vector{TPMStateNode}()
+    pomdp_parents::Vector{<:AbstractTPMStateNode} = Vector{TPMStateNode}()
 
     # The order of the category parents
     tpm_parents_order::Vector{String} = []
 
     # Possible Children
+    pomdp_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
     observation_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
 end
 
@@ -528,10 +531,12 @@ Base.@kwdef mutable struct PomdpStateNodeParameters
 end
 
 Base.@kwdef mutable struct PomdpStateNodeState
-    posterior::Array{Matrix{Union{Real, Missing}}} = Array{Matrix{Union{Real, Missing}}}(missing, 0, 0)
-    previous_qs::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
-    prediction::Array{Matrix{Union{Real, Missing}}} = Array{Matrix{Union{Real, Missing}}}(missing, 0, 0)
-    parent_predictions::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(missing, 0)
+    posterior::Vector{Vector{<:Real}} = Vector{Vector{<:Real}}(undef, 0)
+    previous_qs::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(undef, 0)
+    prediction::Array{Matrix{Union{Real, Missing}}, 1} = Array{Matrix{Union{Real, Missing}}, 1}(undef, 0)
+    parent_predictions::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(undef, 0, 0)
+    posterior_policy::Vector{Vector{Union{Missing, Int64}}} = Vector{Vector{Union{Missing, Int64}}}()
+    n_control::Vector{Union{Real, Missing}} = [missing]
 end
 
 """
@@ -542,6 +547,8 @@ Base.@kwdef mutable struct PomdpStateNodeHistory
     prediction::Vector{Any} = []
     parent_predictions::Vector{Any} = []
     previous_qs::Vector{Any} = []
+    posterior_policy::Vector{Any} = []
+    n_control::Vector{Any} = []
 end
 
 """
@@ -553,7 +560,7 @@ Base.@kwdef mutable struct PomdpStateNode <: AbstractPomdpStateNode
     parameters::PomdpStateNodeParameters = PomdpStateNodeParameters()
     states::PomdpStateNodeState = PomdpStateNodeState()
     history::PomdpStateNodeHistory = PomdpStateNodeHistory()
-    update_type::HGFUpdateType = ClassicUpdate()
+    update_type::HGFUpdateType = EnhancedUpdate()
 end
 
 #############################################################################################################
@@ -566,13 +573,14 @@ end
 
 Base.@kwdef mutable struct TPMStateNodeEdges
     # Possible Parents
-    category_parents::Vector{<:AbstractCategoricalStateNode} = Vector{CategoricalStateNode}()
+    tpm_parents::Vector{<:AbstractCategoricalStateNode} = Vector{CategoricalStateNode}()
 
     # The order of the category parents
-    category_parents_order::Vector{String} = []
+    # category_parents_order::Vector{String} = []
 
     # Possible Children
-    tpm_children::Vector{<:AbstractPomdpStateNode} = Vector{PomdpStateNode}()
+    pomdp_children::Vector{<:AbstractPomdpStateNode} = Vector{PomdpStateNode}()
+    observation_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
 
 end
 

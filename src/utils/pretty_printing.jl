@@ -22,8 +22,10 @@ function Base.show(io::IO, hgf::HGF)
         count(node -> isa(node, CategoricalStateNode), hgf.ordered_nodes.all_state_nodes)
     n_tpm_state_nodes =
         count(node -> isa(node, TPMStateNode), hgf.ordered_nodes.all_state_nodes)
+    n_pomdp_state_nodes =
+        count(node -> isa(node, PomdpStateNode), hgf.ordered_nodes.all_state_nodes)
     n_state_nodes =
-        n_continuous_state_nodes + n_binary_state_nodes + n_categorical_state_nodes + n_tpm_state_nodes
+        n_continuous_state_nodes + n_binary_state_nodes + n_categorical_state_nodes + n_tpm_state_nodes + n_pomdp_state_nodes
 
     #Number of observations
     n_observations = length(hgf.ordered_nodes.input_nodes[1].history.input_value) - 1
@@ -35,13 +37,13 @@ function Base.show(io::IO, hgf::HGF)
     #Input nodes
     println("Number of input nodes: $n_input_nodes")
     println(
-        "($n_continuous_input_nodes continuous, $n_binary_input_nodes binary, $n_categorical_input_nodes categorical, $n_pomdp_input_nodes POMDP)",
+        "($n_continuous_input_nodes continuous, $n_binary_input_nodes binary, $n_categorical_input_nodes categorical, $n_pomdp_input_nodes pomdp)",
     )
 
     #State nodes
     println("Number of state nodes: $n_state_nodes")
     println(
-        "($n_continuous_state_nodes continuous, $n_binary_state_nodes binary, $n_categorical_state_nodes categorical, and $n_tpm_state_nodes TPM)",
+        "($n_continuous_state_nodes continuous, $n_binary_state_nodes binary, $n_categorical_state_nodes categorical, pomdp $n_pomdp_state_nodes, and $n_tpm_state_nodes TPM)",
     )
 
     #Number of observations

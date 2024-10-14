@@ -185,10 +185,26 @@ function check_hgf(node::PomdpInputNode)
     node_name = node.name
 
     #Require exactly one value parent
-    if length(node.edges.observation_parents) != 1
+    if length(node.edges.observation_parents) > 1
         throw(
             ArgumentError(
                 "The POMDP input node $node_name does not have exactly one observation parent. This is not supported.",
+            ),
+        )
+    end
+
+end
+
+function check_hgf(node::PomdpStateNode)
+
+    #Extract node name for error messages
+    node_name = node.name
+
+    #Require exactly one value parent
+    if length(node.edges.pomdp_parents) < 1
+        throw(
+            ArgumentError(
+                "The POMDP state node $node_name does not have any parents. This is not supported.",
             ),
         )
     end
@@ -201,7 +217,7 @@ function check_hgf(node::TPMStateNode)
     node_name = node.name
 
     #Require exactly one value child, which can be a POMDP child 
-    if length(node.edges.observation_children) != 1
+    if length(node.edges.pomdp_children) != 1
         throw(
             ArgumentError(
                 "The TPM state node $node_name does not have exactly one observation child or POMDP child. This is not supported.",
