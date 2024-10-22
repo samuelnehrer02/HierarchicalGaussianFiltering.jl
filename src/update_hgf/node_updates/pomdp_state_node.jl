@@ -36,9 +36,6 @@ function calculate_prediction(node::PomdpStateNode)
 
 end
 
-
-
-
 ##################################
 ######## Update posterior ########
 ##################################

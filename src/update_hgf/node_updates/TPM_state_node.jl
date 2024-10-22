@@ -14,14 +14,15 @@ end
 function calculate_prediction(node::TPMStateNode)
 
     #Get current parent predictions
-    parent_predictions =
-        map(x -> x.states.prediction, collect(values(node.edges.tpm_parents)))
+    parent_predictions = map(x -> x.states.prediction, collect(values(node.edges.tpm_parents)))
     
     # Convert to matrix
     prediction_matrix = Matrix(hcat(parent_predictions...))
 
-    return prediction_matrix
+    @show node.name
+    @show prediction_matrix
 
+    return prediction_matrix
 end
 
 ##################################
@@ -44,6 +45,9 @@ end
 
 function calculate_posterior(node::TPMStateNode)
 
+    # Extract the pomdp child
+    child = node.edges.pomdp_children[1]
+
     # From the name, extracts the factor and action.
     # If action and factor is 1, perform update, otherwise posterior is equal to missing
     node_name = node.name
@@ -53,10 +57,7 @@ function calculate_posterior(node::TPMStateNode)
     m_a = match(r"a(\d+)", node_name)
     n_a = parse(Int, m_a.captures[1])
 
-    action_vector = node.edges.pomdp_children[1].states.posterior_policy
-
-    # Extract the pomdp child
-    child = node.edges.pomdp_children[1]
+    action_vector = child.states.posterior_policy
 
     if !ismissing(action_vector[n_f][n_a])
 
@@ -82,6 +83,9 @@ function calculate_posterior(node::TPMStateNode)
 
     # Setting previous_qs for next calculation, regardless of chosen action
     node.states.previous_qs .= child.states.posterior[n_f]
+
+    @show node.name
+    @show posterior
 
     return posterior
 end
