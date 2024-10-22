@@ -105,13 +105,19 @@ function reset_state!(node::PomdpStateNode)
     # Set the posterior to an empty matrix
     node.states.posterior = Vector{Vector{<:Real}}(undef, 0)
     
-    node.states.previous_qs = Vector{Union{Real, Missing}}(undef, 0)
+    if !ismissing(node.states.n_states[1])
+        node.states.previous_qs = [fill(1 / n, n) for n in node.states.n_states]
+    else
+        node.states.previous_qs = Vector{Union{Real, Missing}}(undef, 0)
+    end
 
-    node.states.prediction = Array{Matrix{Union{Real, Missing}}, 1}(undef, 0)
+    # node.states.prediction = Array{Matrix{Union{Real, Missing}}, 1}(undef, 0)
+    node.states.prediction = missing
     node.states.parent_predictions = Matrix{Union{Real, Missing}}(undef, 0, 0)
 
     node.states.posterior_policy = Vector{Vector{Union{Missing, Int64}}}(undef, 0)
     node.states.n_control = [missing]
+    node.states.n_states = [missing]
 
     return nothing
 end

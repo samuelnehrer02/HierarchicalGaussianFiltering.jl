@@ -131,12 +131,20 @@ function calculate_posterior(node::CategoricalStateNode)
         # Extract the TPM child
         child = node.edges.tpm_children[1]
 
-        # Extracts the number from the name string
-        cat_state = parse(Int, match(r"\d+", node.name).match)
+        # Extract child posterior
+        posterior_child = child.states.posterior
 
-        # Extracts the right row from the TPM child posterior matrix
-        posterior = child.states.posterior[cat_state, :]
+        if !ismissing(posterior_child)
 
+            # Extracts the number from the name string
+            cat_state = parse(Int, match(r"_(\d+)", node.name).captures[1])
+
+            # Extracts the right row from the TPM child posterior matrix
+            posterior = child.states.posterior[cat_state, :]
+
+        else
+            posterior = fill(missing, length(node.edges.category_parents))
+        end
     end
 
     return posterior

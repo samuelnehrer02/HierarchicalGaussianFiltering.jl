@@ -24,7 +24,7 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
 
     # Initial configurations for the Total POMDP HGF model
     defaults = Dict(
-        "n_categories" => nothing,
+        "n_states" => nothing,
         "n_categories_from" => [4, 2],
         "n_categories_to" => [4, 2],
         "n_control" => [4, 1],
@@ -52,9 +52,9 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
     #Merge to overwrite defaults
     config = merge(defaults, config)
 
-    if config["n_categories"] != nothing
-        config["n_categories_from"] = config["n_categories"]
-        config["n_categories_to"] = config["n_categories"]
+    if config["n_states"] != nothing
+        config["n_categories_from"] = config["n_states"]
+        config["n_categories_to"] = config["n_states"]
     end
 
     # Preparing names for input nodes (one POMDP input node)
@@ -330,7 +330,13 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
     )
 
     hgf.state_nodes["xpomdp"].states.n_control = config["n_control"]
-    
+    hgf.state_nodes["xpomdp"].states.n_states = config["n_states"]
+
+    reset_state!(hgf.state_nodes["xpomdp"])
+
+    hgf.state_nodes["xpomdp"].states.n_control = config["n_control"]
+    hgf.state_nodes["xpomdp"].states.n_states = config["n_states"]
+
     return hgf
 end
 

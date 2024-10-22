@@ -1,4 +1,40 @@
+###################################
+######## Update prediction ########
+###################################
 
+##### Superfunction #####
+function update_node_prediction!(node::PomdpStateNode, stepsize::Real)
+
+    # Update prediction
+    node.states.prediction = calculate_prediction(node)
+
+    return nothing
+end
+
+function calculate_prediction(node::PomdpStateNode)
+
+    #Get current parent predictions
+    parent_predictions = map(x -> x.states.prediction, collect(values(node.edges.pomdp_parents)))
+    
+    # Create correct array for B-matrix
+    n_control = node.states.n_control
+    n_states = node.states.n_states
+
+    B_matrix = [zeros(n_states[i], n_states[i], n_control[i]) for i in 1:length(n_control)]
+
+    # Populating the B-matrix with the correct predictions
+    iteration = 0
+
+    for i in 1:length(n_control)
+        for j in 1:n_control[i]
+            iteration += 1
+            B_matrix[i][:,:,j] = parent_predictions[iteration]
+        end
+    end
+
+    return B_matrix
+
+end
 
 
 
@@ -14,7 +50,7 @@
 Update the posterior of the PomdpStateNode, which distributes the B-matrices to the correct
 TPMNodes.
 """
-function update_node_posterior!(node::PomdpStateNode, update_type::ClassicUpdate)
+function update_node_posterior!(node::PomdpStateNode, update_type::EnhancedUpdate)
 
     #Update posterior 
     node.states.posterior, node.states.posterior_policy = calculate_posterior(node)
@@ -29,7 +65,7 @@ function calculate_posterior(node::PomdpStateNode)
     child = node.edges.pomdp_children[1]
 
     # Create previous qs
-    node.states.previous_qs = node.states.posterior
+    # node.states.previous_qs = node.states.posterior
 
     # Creating the posterior over actions as a one-hot encoded vector, with missing values for 0
     n_factors = length(node.states.n_control)
@@ -43,6 +79,7 @@ function calculate_posterior(node::PomdpStateNode)
         one_hot_action[i] = Vector{Union{Missing, Int}}(missing, n_control[i])
 
         one_hot_action[i][action[i]] = 1
+
     end
 
     # Add the one-hot encoded action to the posterior
@@ -54,4 +91,12 @@ function calculate_posterior(node::PomdpStateNode)
     return posterior, posterior_policy
 end
 
+
+function update_node_value_prediction_error!(node::PomdpStateNode)
+    return nothing
+end
+
+function update_node_precision_prediction_error!(node::PomdpStateNode)
+    return nothing
+end
 

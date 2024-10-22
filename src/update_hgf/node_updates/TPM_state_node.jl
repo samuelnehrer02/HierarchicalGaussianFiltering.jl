@@ -15,7 +15,7 @@ function calculate_prediction(node::TPMStateNode)
 
     #Get current parent predictions
     parent_predictions =
-        map(x -> x.states.prediction, collect(values(node.edges.category_parents)))
+        map(x -> x.states.prediction, collect(values(node.edges.tpm_parents)))
     
     # Convert to matrix
     prediction_matrix = Matrix(hcat(parent_predictions...))
@@ -42,33 +42,75 @@ function update_node_posterior!(node::TPMStateNode, update_type::ClassicUpdate)
     return nothing
 end
 
-
-
 function calculate_posterior(node::TPMStateNode)
 
+    # From the name, extracts the factor and action.
+    # If action and factor is 1, perform update, otherwise posterior is equal to missing
+    node_name = node.name
+    m_f = match(r"f(\d+)", node_name)
+    n_f = parse(Int, m_f.captures[1])
+
+    m_a = match(r"a(\d+)", node_name)
+    n_a = parse(Int, m_a.captures[1])
+
+    action_vector = node.edges.pomdp_children[1].states.posterior_policy
+
     # Extract the pomdp child
-    child = node.edges.observation_children[1]
+    child = node.edges.pomdp_children[1]
 
-    # Initialize previous input
-    previous_input = node.states.previous_qs
+    if !ismissing(action_vector[n_f][n_a])
 
-    # Initialize input as previous input
-    input = deepcopy(previous_input)
+        # Initialize previous input
+        previous_input = node.states.previous_qs
 
-    # Update the input from the observation child node
-    input .= child.states.input_value
+        # Initialize input as previous input
+        input = deepcopy(previous_input)
 
-    # Initialize posterior as previous posterior
-    posterior = node.states.posterior
-    
-    # Calculate the posterior as an outer product of the previous and current input 
-    posterior .= previous_input .* input'
+        # Update the input from the observation child node
+        input .= child.states.posterior[n_f]
 
-    # And save the input as previous input for the next iteration
-    node.states.previous_qs .= input
+        # Initialize posterior as previous posterior
+        posterior = input .* input'
+        
+        # Calculate the posterior as an outer product of the previous and current input 
+        posterior .= previous_input .* input'
+
+        
+    else
+        posterior = missing
+    end
+
+    # Setting previous_qs for next calculation, regardless of chosen action
+    node.states.previous_qs .= child.states.posterior[n_f]
 
     return posterior
 end
+
+# function calculate_posterior(node::TPMStateNode)
+
+#     # Extract the pomdp child
+#     child = node.edges.observation_children[1]
+
+#     # Initialize previous input
+#     previous_input = node.states.previous_qs
+
+#     # Initialize input as previous input
+#     input = deepcopy(previous_input)
+
+#     # Update the input from the observation child node
+#     input .= child.states.input_value
+
+#     # Initialize posterior as previous posterior
+#     posterior = node.states.posterior
+    
+#     # Calculate the posterior as an outer product of the previous and current input 
+#     posterior .= previous_input .* input'
+
+#     # And save the input as previous input for the next iteration
+#     node.states.previous_qs .= input
+
+#     return posterior
+# end
 
 
 function update_node_value_prediction_error!(node::TPMStateNode)

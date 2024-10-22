@@ -532,11 +532,13 @@ end
 
 Base.@kwdef mutable struct PomdpStateNodeState
     posterior::Vector{Vector{<:Real}} = Vector{Vector{<:Real}}(undef, 0)
-    previous_qs::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(undef, 0)
-    prediction::Array{Matrix{Union{Real, Missing}}, 1} = Array{Matrix{Union{Real, Missing}}, 1}(undef, 0)
+    previous_qs::Vector{Vector{Union{Real, Missing}}} = Vector{Vector{Union{Real, Missing}}}(undef, 0)
+    # prediction::Array{Matrix{Union{Real, Missing}}, 1} = Array{Matrix{Union{Real, Missing}}, 1}(undef, 0)
+    prediction::Union{Vector{Array}, Missing} = missing
     parent_predictions::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(undef, 0, 0)
     posterior_policy::Vector{Vector{Union{Missing, Int64}}} = Vector{Vector{Union{Missing, Int64}}}()
     n_control::Vector{Union{Real, Missing}} = [missing]
+    n_states::Vector{Union{Real, Missing}} = [missing]
 end
 
 """
@@ -549,6 +551,7 @@ Base.@kwdef mutable struct PomdpStateNodeHistory
     previous_qs::Vector{Any} = []
     posterior_policy::Vector{Any} = []
     n_control::Vector{Any} = []
+    n_states::Vector{Any} = []
 end
 
 """
@@ -592,7 +595,7 @@ end
 Configuration of states of TMP state node
 """
 Base.@kwdef mutable struct TPMStateNodeState
-    posterior::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(missing, 0, 0)
+    posterior::Union{Matrix{Union{Real, Missing}}, Missing} = Matrix{Union{Real, Missing}}(missing, 0, 0)
     previous_qs::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
     prediction::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(missing, 0, 0)
     parent_predictions::Vector{Union{Real, Missing}} = Vector{Union{Real, Missing}}(missing, 0)
