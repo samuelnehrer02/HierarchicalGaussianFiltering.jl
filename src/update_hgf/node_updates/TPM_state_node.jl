@@ -19,9 +19,6 @@ function calculate_prediction(node::TPMStateNode)
     # Convert to matrix
     prediction_matrix = Matrix(hcat(parent_predictions...))
 
-    @show node.name
-    @show prediction_matrix
-
     return prediction_matrix
 end
 
@@ -83,9 +80,6 @@ function calculate_posterior(node::TPMStateNode)
 
     # Setting previous_qs for next calculation, regardless of chosen action
     node.states.previous_qs .= child.states.posterior[n_f]
-
-    @show node.name
-    @show posterior
 
     return posterior
 end
