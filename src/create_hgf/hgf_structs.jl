@@ -487,7 +487,7 @@ Configuration of states of POMDP input node
 """
 Base.@kwdef mutable struct PomdpInputNodeState
     input_value::Union{Vector{Vector{<:Real}}, Missing} = missing
-    policy_chosen::Union{Vector{<:Real}, Missing} = missing
+    policy_chosen::Union{Vector{Any}, Missing} = missing
 end
 
 """

@@ -19,7 +19,7 @@ function update_hgf!(
         Vector{<:Union{Real,Missing}},
         Dict{String,<:Union{Real,Missing}},
         Vector{<:Real},
-        Vector{Vector},
+        Vector{Vector{Any}},
     };
     stepsize::Real = 1,
 )
@@ -162,7 +162,7 @@ end
 
 For POMDP models where the input is a categorical probability distribution.
 """
-function enter_node_inputs!(hgf::HGF, inputs::Vector{Vector})
+function enter_node_inputs!(hgf::HGF, inputs::Vector{Vector{Any}})
 
     # For each input node 
     for input_node in hgf.ordered_nodes.input_nodes
@@ -203,7 +203,7 @@ end
 
 For POMDP models where the input is a categorical probability distribution.
 """
-function update_node_input!(node::PomdpInputNode, input::Vector{Vector})
+function update_node_input!(node::PomdpInputNode, input::Vector{Vector{Any}})
 
     #Receive input
     node.states.input_value = input[1]
