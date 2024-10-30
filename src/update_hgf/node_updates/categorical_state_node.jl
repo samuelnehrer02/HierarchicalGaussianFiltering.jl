@@ -57,24 +57,24 @@ function calculate_prediction(node::CategoricalStateNode)
         implied_learning_rate =
             (
                 (parent_posteriors .- previous_parent_predictions) ./
-                (parent_predictions .- previous_parent_predictions)
+                ((parent_predictions .- previous_parent_predictions) .+ 1e-16)
             ) .- 1
-
+        
         #Calculate the prediction mean
         prediction =
             ((implied_learning_rate .* parent_predictions) .+ 1) ./
             sum(implied_learning_rate .* parent_predictions .+ 1)
 
 
-        if node.name == "xcat_f2_a1_1" || node.name == "xcat_f2_a1_2"
-            println("-----------------------------------------")
-            println("Prediction is:", prediction)
-            println("Parent Posterior and Prev is: \n")
-            println(parent_posteriors)
-            println(previous_parent_predictions, "\n")
-            println("lr is:", implied_learning_rate)
-            println("-----------------------------------------")
-        end
+        # if node.name == "xcat_f2_a1_1" || node.name == "xcat_f2_a1_2"
+        #     println("-----------------------------------------")
+        #     println("Prediction is:", prediction)
+        #     println("Parent Posterior and Prev is: \n")
+        #     println(parent_posteriors)
+        #     println(previous_parent_predictions, "\n")
+        #     println("lr is:", implied_learning_rate)
+        #     println("-----------------------------------------")
+        # end
         
         #If there was no observation
     else
