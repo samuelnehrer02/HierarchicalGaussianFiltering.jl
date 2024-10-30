@@ -12,12 +12,7 @@ function update_node_prediction!(node::CategoricalStateNode, stepsize::Real)
 
     #Update prediction mean
     node.states.prediction, node.states.parent_predictions = calculate_prediction(node)
-
-    # if node.name == "xcat_f2_a1_1" || node.name == "xcat_f2_a1_2"
-    #     println("Prediction: \n", node.states.prediction)
-    #     println("Parent Predictions: \n", node.states.parent_predictions)
-    # end
-
+    
     return nothing
 end
 
@@ -64,32 +59,13 @@ function calculate_prediction(node::CategoricalStateNode)
         prediction =
             ((implied_learning_rate .* parent_predictions) .+ 1) ./
             sum(implied_learning_rate .* parent_predictions .+ 1)
-
-
-        # if node.name == "xcat_f2_a1_1" || node.name == "xcat_f2_a1_2"
-        #     println("-----------------------------------------")
-        #     println("Prediction is:", prediction)
-        #     println("Parent Posterior and Prev is: \n")
-        #     println(parent_posteriors)
-        #     println(previous_parent_predictions, "\n")
-        #     println("lr is:", implied_learning_rate)
-        #     println("-----------------------------------------")
-        # end
         
         #If there was no observation
     else
         #Extract prediction from last timestep
         prediction = node.states.prediction
-        # if node.name == "xcat_f2_a1_1" || node.name == "xcat_f2_a1_2"
-        #     println("something is missing")
-        #     println("Prediction is:", prediction)
-        # end
+
     end
-
-    # if node.name == "xcat_f2_a1_1" || node.name == "xcat_f2_a1_2"
-    #     println("Prediction: \n", prediction)
-    # end
-
 
     return prediction, parent_predictions
 
