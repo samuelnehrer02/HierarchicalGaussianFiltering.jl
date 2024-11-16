@@ -81,6 +81,7 @@ include("premade_models/premade_hgfs/premade_categorical_transitions_3level.jl")
 include("premade_models/premade_hgfs/premade_continuous_2level.jl")
 include("premade_models/premade_hgfs/premade_JGET.jl")
 include("premade_models/premade_hgfs/premade_pomdp_transition.jl")
+include("premade_models/premade_hgfs/premade_pomdp_transition_2level.jl")
 
 
 #Utility functions for HGFs
