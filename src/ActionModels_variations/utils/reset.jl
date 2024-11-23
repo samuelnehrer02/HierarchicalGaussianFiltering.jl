@@ -87,7 +87,7 @@ end
 
 function reset_state!(node::CategoricalInputNode)
 
-    node.states.input_value = [missing]
+    node.states.input_value = missing
 
     return nothing
 end

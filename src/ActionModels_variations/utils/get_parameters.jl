@@ -189,6 +189,7 @@ function ActionModels.get_parameters(hgf::HGF)
 
     #If there are shared parameters
     if length(hgf.parameter_groups) > 0
+        @show println("hehe")
         #Go through each shared parameter
         for (parameter_group, grouped_parameters) in hgf.parameter_groups
             #Remove grouped parameters from the list

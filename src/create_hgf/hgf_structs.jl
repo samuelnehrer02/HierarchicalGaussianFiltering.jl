@@ -444,14 +444,14 @@ end
 Configuration of states of categorical input node
 """
 Base.@kwdef mutable struct CategoricalInputNodeState
-    input_value::Union{Real,Missing} = missing
+    input_value::Union{Real, Missing} = missing
 end
 
 """
 History of categorical input node
 """
 Base.@kwdef mutable struct CategoricalInputNodeHistory
-    input_value::Vector{Union{Real,Missing}} = [missing]
+    input_value::Vector{Union{Real, Missing}} = [missing]
 end
 
 """

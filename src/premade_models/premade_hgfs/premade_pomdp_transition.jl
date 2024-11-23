@@ -24,7 +24,7 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
 
     # Initial configurations for the Total POMDP HGF model
     defaults = Dict(
-        "n_states" => nothing,
+        "n_states" => [4, 2],
         "n_categories_from" => [4, 2],
         "n_categories_to" => [4, 2],
         "n_control" => [4, 1],
@@ -121,14 +121,16 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
         for x in 1:config["n_control"][j]
             for i in 1:config["n_categories_from"][j]
                 for k in 1:config["n_categories_to"][j]
-                    push!(binary_parents_names, "xcon_f" * string(j) * "_a" * string(x) * "_" * string(i) * "_" * string(k))
+                    push!(binary_parents_names, "xprob_f" * string(j) * "_a" * string(x) * "_" * string(i) * "_" * string(k))
                 end
             end
         end
     end
 
     ### Creating the top volatility node
-    push!(continuous_parents_names, "xvol")
+    if config["include_volatility_parent"]
+        push!(continuous_parents_names, "xvol")
+    end
 
     # Creating empty list to store the nodes
     nodes = Vector{AbstractNodeInfo}()
@@ -156,15 +158,16 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
 
     ### For continuous nodes
     for node_name in binary_parents_names
-        push!(nodes, 
-        ContinuousState(
-            name = node_name,
-            volatility = config[("xprob", "volatility")],
-            drift = config[("xprob", "drift")],
-            autoconnection_strength = config[("xprob", "autoconnection_strength")],
-            initial_mean = config[("xprob", "initial_mean")],
-            initial_precision = config[("xprob", "initial_precision")],
-            )
+        push!(
+            nodes, 
+            ContinuousState(
+                name = node_name,
+                volatility = config[("xprob", "volatility")],
+                drift = config[("xprob", "drift")],
+                autoconnection_strength = config[("xprob", "autoconnection_strength")],
+                initial_mean = config[("xprob", "initial_mean")],
+                initial_precision = config[("xprob", "initial_precision")],
+            ),
         )
         #Add the grouped parameter name to grouped parameters vector
         push!(grouped_parameters_xprob_initial_precision, (node_name, "initial_precision"))
@@ -252,27 +255,38 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
                     
                     push!(edges, (child_name[1], parent_name[1]) => ProbabilityCoupling(config[("xbin", "xprob", "coupling_strength")]))
 
+                    push!(
+                        grouped_parameters_xbin_xprob_coupling_strength,
+                        (child_name[1], parent_name[1], "coupling_strength"),
+                    )
+
                 end
             end
         end
     end
 
     ### Creating edges between continuous nodes and volatility node
-    for j in 1:length(config["n_control"])
-        for i in 1:config["n_control"][j]
-            for k in 1:config["n_categories_from"][j]
-                for m in 1:config["n_categories_to"][j]
+    if config["include_volatility_parent"]
+        for j in 1:length(config["n_control"])
+            for i in 1:config["n_control"][j]
+                for k in 1:config["n_categories_from"][j]
+                    for m in 1:config["n_categories_to"][j]
 
-                    parent_name = "xvol"
-                    child_name = filter(x -> occursin("f$(j)_a$(i)_$(k)_$(m)", x), binary_parents_names)
-                    
-                    push!(edges, (child_name[1], parent_name) => VolatilityCoupling(config[("xprob", "xvol", "coupling_strength")]))
+                        parent_name = "xvol"
+                        child_name = filter(x -> occursin("f$(j)_a$(i)_$(k)_$(m)", x), binary_parents_names)
+                        
+                        push!(edges, (child_name[1], parent_name) => VolatilityCoupling(config[("xprob", "xvol", "coupling_strength")]))
 
+                        push!(
+                            grouped_parameters_xprob_xvol_coupling_strength,
+                            (child_name[1], "xvol", "coupling_strength"),
+                        )
+                    end
                 end
             end
         end
     end
-
+    
     # Create dictionary with shared parameter information
     parameter_groups = [
         ParameterGroup(
@@ -307,7 +321,7 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
         ),
     ]
 
-    #If volatility parent is included
+    # If volatility parent is included
     if config["include_volatility_parent"]
         push!(
             parameter_groups,
