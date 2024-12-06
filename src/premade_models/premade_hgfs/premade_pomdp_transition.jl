@@ -49,7 +49,7 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
         warn_premade_defaults(defaults, config)
     end
 
-    #Merge to overwrite defaults
+    # Merge to overwrite defaults
     config = merge(defaults, config)
 
     if config["n_states"] != nothing
