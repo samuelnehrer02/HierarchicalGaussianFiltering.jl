@@ -203,7 +203,7 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
 
     ### Creating edges between input pomdp and state pomdp
     for (pomdp_input_node_name, pomdp_input_parents_name) in zip(pomdp_input_node_names, pomdp_input_parents_names)
-        push!(edges, (pomdp_input_node_name, pomdp_input_parents_name) => PomdpCoupling())
+        push!(edges, (pomdp_input_node_name, pomdp_input_parents_name) => ObservationCoupling())
     end
 
     ### Creating edges between state pomdp and tpm
@@ -342,9 +342,6 @@ function premade_pomdp_transition(config::Dict; verbose::Bool = true)
         node_defaults = NodeDefaults(update_type = config["update_type"]),
         save_history = config["save_history"]
     )
-
-    hgf.state_nodes["xpomdp"].states.n_control = config["n_control"]
-    hgf.state_nodes["xpomdp"].states.n_states = config["n_states"]
 
     reset_state!(hgf.state_nodes["xpomdp"])
 

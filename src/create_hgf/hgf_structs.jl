@@ -19,8 +19,8 @@ abstract type AbstractCategoricalInputNode <: AbstractInputNode end
 abstract type AbstractPomdpInputNode <: AbstractInputNode end
 abstract type AbstractPomdpStateNode <: AbstractStateNode end
 abstract type AbstractTPMStateNode <: AbstractStateNode end
-
-
+abstract type AbstractPomdpObservationStateNode <: AbstractStateNode end
+abstract type AbstractOLStateNode <: AbstractStateNode end
 
 #Abstract type for node information
 abstract type AbstractNodeInfo end
@@ -73,6 +73,8 @@ Base.@kwdef mutable struct CategoryCoupling <: ValueCoupling end
 Base.@kwdef mutable struct ObservationCoupling <: ValueCoupling end
 Base.@kwdef mutable struct PomdpCoupling <: ValueCoupling end
 Base.@kwdef mutable struct TPMCoupling <: ValueCoupling end
+Base.@kwdef mutable struct OLCoupling <: ValueCoupling end
+Base.@kwdef mutable struct PomdpObservationCoupling <: ValueCoupling end
 
 #Concrete precision coupling types
 Base.@kwdef mutable struct VolatilityCoupling <: PrecisionCoupling
@@ -388,6 +390,7 @@ Base.@kwdef mutable struct CategoricalStateNodeEdges
     #Possible children
     observation_children::Vector{<:AbstractCategoricalInputNode} = Vector{CategoricalInputNode}()
     tpm_children::Vector{<:AbstractTPMStateNode} = Vector{TPMStateNode}()
+    ol_children::Vector{<:AbstractOLStateNode} = Vector{OLStateNode}()
 end
 
 Base.@kwdef mutable struct CategoricalStateNodeParameters
@@ -474,8 +477,9 @@ Base.@kwdef mutable struct PomdpInput <: AbstractInputNodeInfo
 end
 
 Base.@kwdef mutable struct PomdpInputNodeEdges
-    observation_parents::Vector{<:AbstractTPMStateNode} = Vector{TPMStateNode}()
-    pomdp_parents::Vector{<:AbstractPomdpStateNode} = Vector{PomdpStateNode}()
+
+    observation_parents::Vector{Union{AbstractPomdpStateNode, AbstractPomdpObservationStateNode}} = Vector{Union{PomdpStateNode, PomdpObservationStateNode}}()
+
 end
 
 Base.@kwdef mutable struct PomdpInputNodeParameters
@@ -486,8 +490,10 @@ end
 Configuration of states of POMDP input node
 """
 Base.@kwdef mutable struct PomdpInputNodeState
-    input_value::Union{Vector{Vector{<:Real}}, Missing} = missing
+    input_value::Union{Real, Missing} = missing
+    qs_current::Union{Vector{Vector{<:Real}}, Missing} = missing
     policy_chosen::Union{Vector{Any}, Missing} = missing
+    observation::Union{Vector{<:Real}, Missing} = missing
 end
 
 """
@@ -495,7 +501,9 @@ History of POMDP input node
 """
 Base.@kwdef mutable struct PomdpInputNodeHistory
     input_value::Vector{Any} = []
+    qs_current::Vector{Any} = []
     policy_chosen::Vector{Any} = []
+    observation::Vector{Any} = []
 end
 
 Base.@kwdef mutable struct PomdpInputNode <: AbstractPomdpInputNode
@@ -522,7 +530,7 @@ Base.@kwdef mutable struct PomdpStateNodeEdges
     tpm_parents_order::Vector{String} = []
 
     # Possible Children
-    pomdp_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
+    # pomdp_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
     observation_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
 end
 
@@ -575,6 +583,7 @@ Base.@kwdef mutable struct TPMState <: AbstractStateNodeInfo
 end
 
 Base.@kwdef mutable struct TPMStateNodeEdges
+
     # Possible Parents
     tpm_parents::Vector{<:AbstractCategoricalStateNode} = Vector{CategoricalStateNode}()
 
@@ -622,3 +631,125 @@ Base.@kwdef mutable struct TPMStateNode <: AbstractTPMStateNode
     history::TPMStateNodeHistory = TPMStateNodeHistory()
     update_type::HGFUpdateType = ClassicUpdate()
 end
+
+###########################################################################################
+############################## POMDP Observation State Node ###############################
+###########################################################################################
+
+Base.@kwdef mutable struct PomdpObservationState <: AbstractStateNodeInfo
+    name::String
+end
+
+Base.@kwdef mutable struct PomdpObservationStateNodeEdges
+    # Possible Parents
+    pomdp_observation_parents::Vector{<:AbstractOLStateNode} = Vector{OLStateNode}()
+
+    # The order of the category parents
+    pomdp_observation_parents_order::Vector{String} = []
+
+    # Possible Children
+    observation_children::Vector{<:AbstractPomdpInputNode} = Vector{PomdpInputNode}()
+end
+
+Base.@kwdef mutable struct PomdpObservationStateNodeParameters
+    coupling_strengths::Dict{String,Real} = Dict{String,Real}()
+end
+
+Base.@kwdef mutable struct PomdpObservationStateNodeState
+
+    posterior::Union{Vector{Any}, Missing} = missing
+
+    prediction::Union{Vector{Array}, Missing} = missing
+    parent_predictions::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(undef, 0, 0)
+
+    n_states::Vector{Union{Real, Missing}} = [missing]
+    n_observations::Vector{Union{Real, Missing}} = [missing]
+end
+
+"""
+Configuration of history in POMDP state node
+"""
+Base.@kwdef mutable struct PomdpObservationStateNodeHistory
+
+    posterior::Vector{Any} = []
+
+    prediction::Vector{Any} = []
+    parent_predictions::Vector{Any} = []
+
+    n_states::Vector{Any} = []
+    n_observations::Vector{Any} = []
+end
+
+"""
+Configuration of edges in POMDP state node
+"""
+Base.@kwdef mutable struct PomdpObservationStateNode <: AbstractPomdpObservationStateNode
+    name::String
+    edges::PomdpObservationStateNodeEdges = PomdpObservationStateNodeEdges()
+    parameters::PomdpObservationStateNodeParameters = PomdpObservationStateNodeParameters()
+    states::PomdpObservationStateNodeState = PomdpObservationStateNodeState()
+    history::PomdpObservationStateNodeHistory = PomdpObservationStateNodeHistory()
+    update_type::HGFUpdateType = EnhancedUpdate()
+end
+
+################################################################################################
+############################## Observation Likelihood State Node ###############################
+################################################################################################
+
+Base.@kwdef mutable struct OLState <: AbstractStateNodeInfo
+    name::String
+end
+
+Base.@kwdef mutable struct OLStateNodeEdges
+
+    # Possible Parents
+    ol_parents::Vector{<:AbstractCategoricalStateNode} = Vector{CategoricalStateNode}()
+
+    # The order of the category parents
+    ol_parents_order::Vector{String} = []
+
+    # Possible Children
+    pomdp_observation_children::Vector{<:AbstractPomdpObservationStateNode} = Vector{PomdpObservationStateNode}()
+    observation_children::Vector{<:AbstractPomdpObservationStateNode} = Vector{PomdpObservationStateNode}() #Doesn't really need this observation child. Only so that the ordering of the updates in init_hgf asks: if any(isa.(node.edges.observation_children, ContinuousInputNode))
+end
+
+Base.@kwdef mutable struct OLStateNodeParameters
+    coupling_strengths::Dict{String,Real} = Dict{String,Real}()
+end
+
+Base.@kwdef mutable struct OLStateNodeState
+
+    posterior::Union{Array{Any}, Missing} = missing
+    posterior_observation::Vector{Union{Missing, Int64}} = [missing]
+
+    prediction::Union{Array{Float64}, Missing} = missing
+    parent_predictions::Matrix{Union{Real, Missing}} = Matrix{Union{Real, Missing}}(undef, 0, 0)
+
+end
+
+"""
+Configuration of history in POMDP state node
+"""
+Base.@kwdef mutable struct OLStateNodeHistory
+    
+    posterior::Vector{Any} = []
+    posterior_observation::Vector{Any} = []
+
+    prediction::Vector{Any} = []
+    parent_predictions::Vector{Any} = []
+
+end
+
+"""
+Configuration of edges in POMDP state node
+"""
+Base.@kwdef mutable struct OLStateNode <: AbstractOLStateNode
+    name::String
+    edges::OLStateNodeEdges = OLStateNodeEdges()
+    parameters::OLStateNodeParameters = OLStateNodeParameters()
+    states::OLStateNodeState = OLStateNodeState()
+    history::OLStateNodeHistory = OLStateNodeHistory()
+    update_type::HGFUpdateType = EnhancedUpdate()
+end
+
+

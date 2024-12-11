@@ -227,3 +227,37 @@ function check_hgf(node::TPMStateNode)
 
     return nothing
 end
+
+function check_hgf(node::PomdpObservationStateNode)
+
+    #Extract node name for error messages
+    node_name = node.name
+
+    #Require exactly one value child, which can be a POMDP child 
+    if length(node.edges.observation_children) != 1
+        throw(
+            ArgumentError(
+                "The POMDP Observation state node $node_name does not have exactly one observation POMDP child. This is not supported.",
+            ),
+        )
+    end
+
+    return nothing
+end
+
+function check_hgf(node::OLStateNode)
+
+    #Extract node name for error messages
+    node_name = node.name
+
+    #Require exactly one value child, which can be a POMDP child 
+    if length(node.edges.pomdp_observation_children) != 1
+        throw(
+            ArgumentError(
+                "The Observation Likelihood state node $node_name does not have exactly one POMDP observation child. This is not supported.",
+            ),
+        )
+    end
+
+    return nothing
+end

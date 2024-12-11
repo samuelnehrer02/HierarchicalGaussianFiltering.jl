@@ -34,13 +34,6 @@ function calculate_prediction(node::CategoricalStateNode)
     #Get current parent predictions
     parent_predictions =
         map(x -> x.states.prediction_mean, collect(values(node.edges.category_parents)))
-    
-    # if node.name == "xcat_f2_a1_1" || node.name == "xcat_f2_a1_2"
-    #     println("Parent prediction: \n", parent_predictions)
-    #     for i in 1:length(node.edges.category_parents)
-    #         println("Parent name: \n", node.edges.category_parents[i].name)
-    #     end
-    # end
 
     #Get previous parent predictions
     previous_parent_predictions = node.states.parent_predictions
@@ -153,6 +146,42 @@ function calculate_posterior(node::CategoricalStateNode)
         else
             posterior = fill(missing, length(node.edges.category_parents))
         end
+    
+
+    elseif !isempty(node.edges.ol_children)
+
+        # Extract the OL child
+        child = node.edges.ol_children[1]
+
+        # Extract the observation for this node based on its name
+        node_name = node.name
+
+        obs_node = match(r"o(\d+)", node_name)
+        obs_node = parse(Int, obs_node.captures[1])
+
+        # Extracting the observation posterior from child node_updates
+        observation_vector = child.states.posterior_observation
+
+        # If observation is equal to the obs_node (meaning the observation is for this node) then update the categorical node
+        if !ismissing(observation_vector[obs_node])
+
+            # Extracting the posterior from the child
+            ola = child.states.posterior
+
+            # Indexing the observation in question
+            correct_obs_rows = ola[obs_node, :, ntuple(_ -> :, ndims(ola) - 2)...]
+
+            # Making it into a vector to pass onto the binary parent nodes
+            posterior = vec(correct_obs_rows)
+
+        else
+            # Else fill with a vector of missing, the length of the number of parents
+            posterior = fill(missing, length(node.edges.category_parents))
+        end
+
+
+
+        
     end
 
     return posterior

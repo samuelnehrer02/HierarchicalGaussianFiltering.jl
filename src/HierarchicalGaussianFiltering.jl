@@ -24,7 +24,8 @@ export DriftCoupling,
     LinearTransform,
     NonlinearTransform,
     PomdpCoupling,
-    TPMCoupling
+    TPMCoupling,
+    OLCoupling
 
 #Add premade agents to shared dict at initialization
 function __init__()
@@ -61,6 +62,8 @@ include("update_hgf/node_updates/categorical_state_node.jl")
 include("update_hgf/node_updates/pomdp_input_node.jl")
 include("update_hgf/node_updates/pomdp_state_node.jl")
 include("update_hgf/node_updates/tpm_state_node.jl")
+include("update_hgf/node_updates/pomdp_observation_state_node.jl")
+include("update_hgf/node_updates/OL_state_node.jl")
 
 #Functions for creating HGFs
 include("create_hgf/check_hgf.jl")
@@ -82,11 +85,14 @@ include("premade_models/premade_hgfs/premade_continuous_2level.jl")
 include("premade_models/premade_hgfs/premade_JGET.jl")
 include("premade_models/premade_hgfs/premade_pomdp_transition.jl")
 include("premade_models/premade_hgfs/premade_pomdp_transition_2level.jl")
+include("premade_models/premade_hgfs/premade_pomdp_observation.jl")
 
 
 #Utility functions for HGFs
 include("utils/get_prediction.jl")
 include("utils/get_surprise.jl")
 include("utils/pretty_printing.jl")
+include("utils/math_and_other_utils.jl")
+
 
 end

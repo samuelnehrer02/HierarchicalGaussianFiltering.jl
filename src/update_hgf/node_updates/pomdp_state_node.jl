@@ -59,10 +59,7 @@ end
 function calculate_posterior(node::PomdpStateNode)
 
     # Extract the pomdp input child
-    child = node.edges.pomdp_children[1]
-
-    # Create previous qs
-    # node.states.previous_qs = node.states.posterior
+    child = node.edges.observation_children[1]
 
     # Creating the posterior over actions as a one-hot encoded vector, with missing values for 0
     n_factors = length(node.states.n_control)
@@ -83,7 +80,7 @@ function calculate_posterior(node::PomdpStateNode)
     posterior_policy = one_hot_action
 
     # Extract the input (qs) and the action chosen from PomdpInputNode
-    posterior = child.states.input_value
+    posterior = child.states.qs_current
     
     return posterior, posterior_policy
 end

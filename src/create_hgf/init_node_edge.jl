@@ -47,6 +47,14 @@ function init_node(node_info::TPMState)
     TPMStateNode(name = node_info.name)
 end
 
+function init_node(node_info::PomdpObservationState)
+    PomdpObservationStateNode(name = node_info.name)
+end
+
+function init_node(node_info::OLState)
+    OLStateNode(name = node_info.name)
+end
+
 ### Function for initializing an edge ###
 function init_edge!(
     child_node::AbstractNode,
@@ -87,6 +95,15 @@ function init_edge!(
     elseif coupling_type isa TPMCoupling
         parents_field = :tpm_parents
         children_field = :tpm_children
+
+    elseif coupling_type isa OLCoupling
+        parents_field = :ol_parents
+        children_field = :ol_children
+
+    elseif coupling_type isa PomdpObservationCoupling
+        parents_field = :pomdp_observation_parents
+        children_field = :pomdp_observation_children
+
     end
 
     #Add the parent to the child node

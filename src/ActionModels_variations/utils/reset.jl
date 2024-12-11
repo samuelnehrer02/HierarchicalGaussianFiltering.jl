@@ -95,7 +95,9 @@ end
 function reset_state!(node::PomdpInputNode)
 
     node.states.input_value = missing
+    node.states.qs_current = missing
     node.states.policy_chosen = missing
+    node.states.observation = missing
 
     return nothing
 end
@@ -140,5 +142,33 @@ function reset_state!(node::TPMStateNode)
     return nothing
 end
 
+function reset_state!(node::PomdpObservationStateNode)
 
+    # Reset qs and observation vectors to empty
+    node.states.posterior = missing
+
+    # Reset prediction and parent_predictions
+    node.states.prediction = missing
+    node.states.parent_predictions = Matrix{Union{Real, Missing}}(undef, 0, 0)
+
+    # Reset n_states to [missing]
+    node.states.n_states = [missing]
+    node.states.n_observations = [missing]
+
+    return nothing
+end
+
+function reset_state!(node::OLStateNode)
+
+    # Reset the posterior, qs, and observation arrays
+    node.states.posterior = missing
+    node.states.posterior_observation = [missing]
+
+    # Reset prediction and parent_predictions
+    node.states.prediction = missing
+    node.states.parent_predictions = Matrix{Union{Real, Missing}}(undef, 0, 0)
+
+
+    return nothing
+end
 

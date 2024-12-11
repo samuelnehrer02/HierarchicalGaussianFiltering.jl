@@ -20,6 +20,7 @@ function premade_hgf(model_name::String, config::Dict = Dict(); verbose = true)
         "categorical_state_transitions" => premade_categorical_state_transitions, #Categorical 3 level HGF for learning state transitions
         "pomdp_transitions" => premade_pomdp_transition, #3 level HGF for POMDP transitions 
         "pomdp_transitions_2level" => premade_pomdp_transition_2level, # POMDP transitions without volatility node
+        "pomdp_observations" => premade_pomdp_observation, #3 level HGF for observation likelihoods
     )
 
     #Check that the specified model is in the list of keys

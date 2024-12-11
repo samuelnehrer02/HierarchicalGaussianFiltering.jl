@@ -205,9 +205,19 @@ For POMDP models where the input is a categorical probability distribution.
 """
 function update_node_input!(node::PomdpInputNode, input::Vector{Vector})
 
-    #Receive input
-    node.states.input_value = input[1]
-    node.states.policy_chosen = input[2]
+    if any(isa.(node.edges.observation_parents, PomdpStateNode))
+
+        #Receive input
+        node.states.qs_current = input[1] # In this case it is the qs
+        node.states.policy_chosen = input[2] # And here it is the policy
+
+    elseif any(isa.(node.edges.observation_parents, PomdpObservationStateNode))
+
+        #Receive input
+        node.states.qs_current = input[1] # In this case it is the qs
+        node.states.observation = input[2] # And here it is the observation
+
+    end
 
     return nothing
 end

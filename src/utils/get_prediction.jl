@@ -161,3 +161,10 @@ function get_prediction(node::PomdpStateNode, stepsize::Real = 1)
     return new_states
 end
 
+function get_prediction(node::PomdpObservationStateNode, stepsize::Real = 1)
+
+    #Binary input nodes have no prediction states
+    new_states = node.states.prediction
+
+    return new_states
+end
