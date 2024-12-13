@@ -99,28 +99,6 @@ function premade_pomdp_observation(config::Dict; verbose::Bool = true)
         end
     end
     
-    # # Creating the binary node names
-    # for i in 1:length(config["n_observations"])
-    #     for j in 1:config["n_observations"][i]
-    #         for k in 1:length(config["n_states"])
-    #             for l in 1:config["n_states"][k]
-    #                 push!(categorical_parents_names, "xbin_m$(i)_o$(j)_f$(k)_s$(l)")
-    #             end
-    #         end
-    #     end
-    # end
-
-    # # Creating the probability node names
-    # for i in 1:length(config["n_observations"])
-    #     for j in 1:config["n_observations"][i]
-    #         for k in 1:length(config["n_states"])
-    #             for l in 1:config["n_states"][k]
-    #                 push!(binary_parents_names, "xprob_m$(i)_o$(j)_f$(k)_s$(l)")
-    #             end
-    #         end
-    #     end
-    # end
-
     # Creating the binary node names. Generates name for each unique combination of states
     for i in 1:length(config["n_observations"])
         for j in 1:config["n_observations"][i]
@@ -234,8 +212,10 @@ function premade_pomdp_observation(config::Dict; verbose::Bool = true)
     ### Creating edges between OL and categorical nodes
     for i in 1:length(config["n_observations"])
         for k in 1:config["n_observations"][i]
+
+            regex = Regex("m$(i)_o$(k)(?!\\d)")
     
-            parent_name = filter(x -> occursin("m$(i)_o$(k)", x), pomdp_ol_parents_names)
+            parent_name = filter(x -> occursin(regex, x), pomdp_ol_parents_names)
             child_name = filter(x -> occursin("m$(i)", x), pomdp_observation_state_parents_names)
     
             push!(edges, (child_name[1], parent_name[1]) => OLCoupling())
@@ -243,28 +223,14 @@ function premade_pomdp_observation(config::Dict; verbose::Bool = true)
         end
     end
 
-    ### Creating edges between categorical and binary nodes
-    # for i in 1:length(config["n_observations"])
-    #     for k in 1:config["n_observations"][i]
-    #         for j in 1:length(config["n_states"])
-    #             for l in 1:config["n_states"][j]
-    
-    #                 parent_name = filter(x -> occursin("m$(i)_o$(k)_f$(j)_s$(l)", x), categorical_parents_names)
-    #                 child_name = filter(x -> occursin("m$(i)_o$(k)", x), pomdp_ol_parents_names)
-    
-    #                 push!(edges, (child_name[1], parent_name[1]) => CategoryCoupling())
-    
-    #             end
-    #         end
-    #     end
-    # end
-
     ## Creating edges between categorical and binary nodes
     for i in 1:length(config["n_observations"])
         for k in 1:config["n_observations"][i]
 
-            parent_names = filter(x -> occursin("m$(i)_o$(k)", x), categorical_parents_names)
-            child_names = filter(x -> occursin("m$(i)_o$(k)", x), pomdp_ol_parents_names)
+            regex = Regex("m$(i)_o$(k)(?!\\d)")
+
+            parent_names = filter(x -> occursin(regex, x), categorical_parents_names)
+            child_names = filter(x -> occursin(regex, x), pomdp_ol_parents_names)
 
             for parent_name in parent_names
                 for child_name in child_names
@@ -276,26 +242,7 @@ function premade_pomdp_observation(config::Dict; verbose::Bool = true)
     end
 
 
-
-
-
-
-    # ### Creating edges between categorical and binary nodes
-    # for i in 1:length(config["n_observations"])  # Loop over modalities
-    #     for k in 1:config["n_observations"][i]  # Loop over observations
-    #         for indices in Iterators.product((1:config["n_states"][s] for s in 1:length(config["n_states"]))...)
-    #             # Filter the parent and child names from the pre-created lists
-    #             parent_name = collect(filter(x -> occursin("m$(i)_o$(k)" * join("_f$(s)s$(indices[s])" for s in 1:length(indices)), categorical_parents_names)))
-    #             child_name = collect(filter(x -> occursin("m$(i)_o$(k)", pomdp_ol_parents_names)))
-
-    #             # Check that both parent and child names exist
-    #             if !isempty(parent_name) && !isempty(child_name)
-    #                 push!(edges, (child_name[1], parent_name[1]) => CategoryCoupling())
-    #             end
-    #         end
-    #     end
-    # end
-
+    ### Creating edges between binary nodes and probability nodes
     for name in categorical_parents_names
         pattern = replace(name, "xbin_" => "")
 
@@ -311,28 +258,6 @@ function premade_pomdp_observation(config::Dict; verbose::Bool = true)
 
     end
 
-
-    # ### Creating edges between binary and probability nodes
-    # for i in 1:length(config["n_observations"])
-    #     for k in 1:config["n_observations"][i]
-    #         for j in 1:length(config["n_states"])
-    #             for l in 1:config["n_states"][j]
-    
-    #                 parent_name = filter(x -> occursin("m$(i)_o$(k)_f$(j)_s$(l)", x), binary_parents_names)
-    #                 child_name = filter(x -> occursin("m$(i)_o$(k)_f$(j)_s$(l)", x), categorical_parents_names)
-    
-    #                 push!(edges, (child_name[1], parent_name[1]) => ProbabilityCoupling(config[("xbin", "xprob", "coupling_strength")]))
-    
-    #                 push!(
-    #                     grouped_parameters_xbin_xprob_coupling_strength,
-    #                     (child_name[1], parent_name[1], "coupling_strength"),
-    #                 )
-    
-    #             end
-    #         end
-    #     end
-    # end
-
     ### Creating edges between probability nodes and volatility node
     for name in binary_parents_names
         parent_name = "xvol"
@@ -346,30 +271,6 @@ function premade_pomdp_observation(config::Dict; verbose::Bool = true)
         )
 
     end
-
-
-    # ### Creating edges between probability nodes and volatility node
-    # if config["include_volatility_parent"]
-    #     for i in 1:length(config["n_observations"])
-    #         for k in 1:config["n_observations"][i]
-    #             for j in 1:length(config["n_states"])
-    #                 for l in 1:config["n_states"][j]
-    
-    #                     parent_name = "xvol"
-    #                     child_name = filter(x -> occursin("m$(i)_o$(k)_f$(j)_s$(l)", x), binary_parents_names)
-    
-    #                     push!(edges, (child_name[1], parent_name) => VolatilityCoupling(config[("xprob", "xvol", "coupling_strength")]))
-    
-    #                     push!(
-    #                         grouped_parameters_xprob_xvol_coupling_strength,
-    #                         (child_name[1], "xvol", "coupling_strength"),
-    #                     )
-    
-    #                 end
-    #             end
-    #         end
-    #     end
-    # end
 
     # Create dictionary with shared parameter information
     parameter_groups = [
