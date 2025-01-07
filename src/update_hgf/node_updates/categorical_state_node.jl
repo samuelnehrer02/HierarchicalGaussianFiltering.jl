@@ -116,17 +116,6 @@ function calculate_posterior(node::CategoricalStateNode)
             posterior[child.states.input_value] = 1
         end
 
-    # If Categorical State Node has POMDP children we just copy the input
-    # elseif !isempty(node.edges.pomdp_children)
-    #     # Extract the pomdp child
-    #     child = node.edges.pomdp_children[1]
-
-    #     # Initialize posterior as previous posterior
-    #     posterior = node.states.posterior
-
-    #     # Set the posterior to be the input value
-    #     posterior .= child.states.input_value
-
     elseif !isempty(node.edges.tpm_children)
 
         # Extract the TPM child
@@ -179,9 +168,6 @@ function calculate_posterior(node::CategoricalStateNode)
             posterior = fill(missing, length(node.edges.category_parents))
         end
 
-
-
-        
     end
 
     return posterior

@@ -47,7 +47,6 @@ function calculate_posterior(node::PomdpObservationStateNode)
     # Extract the pomdp input child
     child = node.edges.observation_children[1]
 
-    # # Extracting the observation and creating observation likelihood arrays for each modality
     # Exatracting observation from input node
     observation = child.states.observation
 

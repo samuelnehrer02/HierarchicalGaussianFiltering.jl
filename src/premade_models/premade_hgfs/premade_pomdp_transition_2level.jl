@@ -268,12 +268,3 @@ function premade_pomdp_transition_2level(config::Dict; verbose::Bool = true)
 
     return hgf
 end
-
-# config = Dict(
-#     "n_categories" => [10, 2],
-#     "n_control" => [4, 1],
-# )
-
-
-# premade_pomdp_transition_3level(config, true)
-
